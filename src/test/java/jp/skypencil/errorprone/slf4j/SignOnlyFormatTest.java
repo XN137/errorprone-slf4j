@@ -16,11 +16,11 @@ public class SignOnlyFormatTest {
   public void testPlaceholderOnly() {
     helper
         .addSourceLines(
-            "NonConstantFormat.java",
+            "PlaceholderOnly.java",
             "import org.slf4j.Logger;\n"
                 + "import org.slf4j.LoggerFactory;\n"
                 + "\n"
-                + "public class NonConstantFormat {\n"
+                + "public class PlaceholderOnly {\n"
                 + "    private final Logger logger = LoggerFactory.getLogger(getClass());\n"
                 + "    void method() {\n"
                 + "        // BUG: Diagnostic contains: SLF4J logging format should contain non-sign text, but it is \'{}, {}\'\n"
@@ -66,6 +66,25 @@ public class SignOnlyFormatTest {
                 + "        logger.info(marker, \"{}: {}\", 1, 2);"
                 + "    }\n"
                 + "}")
+        .doTest();
+  }
+
+  @Test
+  public void testStaticBlock() {
+    helper
+        .addSourceLines(
+            "StaticBlock.java",
+            "import org.slf4j.Logger;\n"
+                + "import org.slf4j.LoggerFactory;\n"
+                + "\n"
+                + "public class StaticBlock {\n"
+                + "   public static boolean DEBUG = false;\n"
+                + "   private static final Logger logger = LoggerFactory.getLogger(StaticBlock.class);\n"
+                + "\n"
+                + "   static {\n"
+                + "     logger.info(\"Debug mode \" + (DEBUG ? \"enabled.\" : \"disabled.\"));\n"
+                + "   }\n"
+                + "}\n")
         .doTest();
   }
 }

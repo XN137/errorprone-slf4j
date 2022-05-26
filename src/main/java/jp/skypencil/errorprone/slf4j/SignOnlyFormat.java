@@ -10,6 +10,7 @@ import com.google.errorprone.bugpatterns.BugChecker.MethodInvocationTreeMatcher;
 import com.google.errorprone.matchers.CompileTimeConstantExpressionMatcher;
 import com.google.errorprone.matchers.Description;
 import com.google.errorprone.util.ASTHelpers;
+import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.tools.javac.code.Symbol.VarSymbol;
 import com.sun.tools.javac.util.List;
@@ -39,11 +40,13 @@ public class SignOnlyFormat extends BugChecker implements MethodInvocationTreeMa
             ? 1
             : 0;
 
-    if (!IS_CONST.matches(tree.getArguments().get(formatIndex), state)) {
+    ExpressionTree expression = tree.getArguments().get(formatIndex);
+    if (!IS_CONST.matches(expression, state)) {
       return Description.NO_MATCH;
     }
 
-    String format = ASTHelpers.constValue(tree.getArguments().get(formatIndex)).toString();
+    Object constValue = ASTHelpers.constValue(expression);
+    String format = constValue.toString();
     if (verifyFormat(format)) {
       return Description.NO_MATCH;
     }
